@@ -1,0 +1,41 @@
+import requests
+from bs4 import BeautifulSoup
+from datetime import datetime
+import time
+
+# 定義目標網站的URL
+url = 'https://www.ptt.cc/bbs/Hsinchu/index.html'
+
+# 發送GET請求獲取網頁內容
+response = requests.get(url)
+html = response.text
+
+# 使用Beautiful Soup解析HTML內容
+soup = BeautifulSoup(html, 'html.parser')
+
+# 在PTT BBS上，新文章的連結通常位於class為 "r-ent" 的 <div> 元素中
+# 可以使用.find_all()方法來找到所有符合條件的元素
+new_articles = soup.find_all('div', class_='r-ent')
+
+# 逐一檢查每篇文章是否為新文章
+for article in new_articles:
+    title = article.find('div', class_='title').text.strip()  # 取得文章標題
+    author = article.find('div', class_='author').text.strip()  # 取得文章作者
+    date = article.find('div', class_='date').text.strip()  # 取得文章發表日期
+
+    # 判斷是否為新文章的條件
+    if '贈送' in title:
+        # 在這裡可以加入你的推播通知程式碼
+        # 例如，使用Line推播的API來發送通知給指定的用戶
+
+        def send_line_notification(message):
+            url = 'https://notify-api.line.me/api/notify'
+            headers = {'Authorization': 'Bearer XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'}  #Bearea申請請參考Youtube線上教學
+            payload = {'message': message}
+            requests.post(url, headers=headers, data=payload)
+
+        # 設定要發送的訊息
+        message =('標題:', title)
+
+        # 發送通知
+        send_line_notification(message)
